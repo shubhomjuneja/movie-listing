@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.containers {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.containers input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.checkmark {
+  position: absolute;
+  top: 0px;
+  left: 8px;
+  height: 18px;
+  width: 17px;
+  background-color: #224957;
+  border-radius: 5px;
+}
+.containers:hover input ~ .checkmark {
+  background-color: #255161;
+}
+.containers input:checked ~ .checkmark {
+  background-color: #2BD17E;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.containers input:checked ~ .checkmark:after {
+  display: block;
+}
+.containers .checkmark:after {
+  left: 6px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.custom-input::placeholder {
+  color: white;
+  font-size: 14px;
+  font-family: Montserrat;
+  font-weight: 400;
+  line-height: 24px;
+  word-wrap: break-word
+}
