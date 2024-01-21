@@ -3,8 +3,8 @@ import { getMovies } from "@/app/lib/actions";
 import Layout from "@/components/Layout/index";
 import Header from "@/components/Header/index";
 import Loader from "@/components/Loader/index";
-import NotFound from "@/app/movies/components/notFound";
-import List from "@/app/movies/components/list";
+import NotFound from "./components/notFound";
+import List from "./components/list";
 type Props = {};
 
 async function Movies({}: Props) {
