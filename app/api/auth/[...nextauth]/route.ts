@@ -1,69 +1,72 @@
-import NextAuth from "next-auth";
-import { Account, User as AuthUser } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import connectDB from "../../../../lib/db";
-import Users from "../../../../model/Users";
-import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
+import NextAuth, { AuthOptions } from 'next-auth';
 
-const authOptions: any = {
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+
+import prisma from '@/app/lib/prismaDb';
+
+export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: any) {
-        await connectDB();
-        try {
-          const user = await Users.findOne({ email: credentials.email });
-          let token = "";
-          //   if (user) {
-          const isPasswordCorrect =
-            (await credentials.password) === user.password;
-          if (isPasswordCorrect) {
-            // console.debug({user})
-            token = await jwt.sign(
-              { userId: user._id, email: user.email },
-              "JWT-SCERET",
-              { expiresIn: "1h" }
-            );
-            user.name = "ms";
-            const userData = { token, user };
-            console.log({ userData });
-
-            return userData;
-          }
-          //   }
-          return { user, token } as any;
-        } catch (err: any) {
-          throw new Error(err);
+      async authorize(credentials, req) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Invalid Credentials');
         }
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user) {
+          throw new Error('email');
+        }
+
+        if (!user?.hashedPassword) {
+          throw new Error('google');
+        }
+
+        if (!user.emailVerified) {
+          // We can skip this step and add verification on dashbaord later
+          throw new Error('not_confirmed');
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(credentials.password, user.hashedPassword);
+
+        if (!isPasswordCorrect) {
+          throw new Error('password');
+        }
+        return user;
       },
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user }: any) => {
-      console.debug({ token, userMS: user });
-      if (user) {
-        token.user = user;
+    async signIn() {
+      return true; // Allow sign-ins for other providers
+    },
+    async session({ session, token, user }) {
+      if (token.sub) {
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub },
+        });
       }
-      return token;
-    },
-    session({ session, token }: any) {
-      console.debug({ session, msToken: token });
 
-      return { ...session, ...token };
+      return session;
     },
   },
+  debug: process.env.NODE_ENV === 'development',
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60, // 24 hours in seconds
   },
-  secret: "JWT_SECRET",
-  pages: {
-    signIn: "/signin",
-  },
+  secret: process.env.SECRET,
 };
 
 const handler = NextAuth(authOptions);

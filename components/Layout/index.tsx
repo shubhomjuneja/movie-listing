@@ -9,7 +9,7 @@ function Layout({ children }: Props) {
     <div
       className={`h-screen px-5 lg:px-[120px] overflow-auto bg-bottom`}
       style={{
-        backgroundImage: `url('mainBg.svg')`,
+        backgroundImage: `url('../mainBg.svg')`,
         backgroundAttachment: "fixed",
         backgroundSize: "cover",
       }}

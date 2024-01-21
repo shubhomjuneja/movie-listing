@@ -1,11 +1,9 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
 import AddIcon from "../../assets/add.svg";
-import LogoutIcon from "../../assets/logout.svg";
-import { signOut } from "next-auth/react";
+import Logout from "@/components/Header/logout";
 
 type Props = {
   title?: string;
@@ -14,41 +12,23 @@ type Props = {
 };
 
 function Header({ title, isHidden, logoutVisible }: Props) {
-  const router = useRouter();
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/signin");
-  };
   return (
     <div
       className={`${
         isHidden ? "hidden" : "flex"
-      }  justify-between md:pr-[30px]`}
+      }  justify-between md:pr-[30px] items-center`}
     >
       <div className="flex justify-center items-center">
         <p className="text-white md:text-[48px] font-[600] mr-[12px] text-[32px]">
           {title}
         </p>
         {logoutVisible && (
-          <Link href="/create">
+          <Link href="/movies/create">
             <Image src={AddIcon} alt="AddIcon" />
           </Link>
         )}
       </div>
-      {logoutVisible && (
-        <div
-          className="flex justify-center items-center cursor-pointer"
-          onClick={() => {
-            signOut();
-            localStorage.removeItem("token");
-          }}
-        >
-          <button className="mobileMax:hidden text-white text-[16px] mr-[12px] font-[700]">
-            Logout
-          </button>
-          <Image src={LogoutIcon} alt="LogoutIcon" />
-        </div>
-      )}
+      {logoutVisible && <Logout />}
     </div>
   );
 }

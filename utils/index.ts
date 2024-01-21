@@ -6,3 +6,10 @@ export const convertToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+
+export function isHttpOrHttpsUrl(str: string | null) {
+  if (!str) return false;
+  const pattern = /^(http:\/\/|https:\/\/).+/;
+  return pattern.test(str);
+}
+

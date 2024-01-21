@@ -6,6 +6,7 @@ type ButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  type?: "submit" | "reset" | "button";
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -14,6 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   disabled = false,
   loading = false,
+  ...props
 }) => {
   const primaryButtonStyle = `w-full text-white text-[16px] bg-primary h-[48px] rounded-[10px] font-[700]`;
   const secondaryButtonStyle = `w-full text-white text-[16px] bg-transparent border border-white h-[48px] rounded-[10px] font-[700]`;
@@ -31,6 +33,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      {...props}
       className={getClassName()}
       onClick={onClick}
       disabled={disabled || loading}
