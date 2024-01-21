@@ -2,7 +2,7 @@
 
 import Input from "@/components/Input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import {Suspense, useState} from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { passwordRequiredValidation } from "../(auth)/validation/validation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -98,4 +98,6 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+const Page = () => <Suspense><ResetPassword /></Suspense>
+
+export default Page;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {Suspense, useCallback, useEffect, useState} from "react";
 import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
@@ -215,4 +215,6 @@ function Auth() {
   );
 }
 
-export default Auth;
+const Page = () => <Suspense><Auth /></Suspense>
+
+export default Page;
