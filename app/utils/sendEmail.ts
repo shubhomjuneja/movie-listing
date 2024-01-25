@@ -1,14 +1,21 @@
 // utils/sendEmail.js
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
-const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
+const sendEmail = async (
+  to: string,
+  subject: string,
+  text: string,
+  html?: string,
+) => {
   // Configure your SMTP transporter
   const transporter = nodemailer.createTransport({
-    service: 'gmail', // e.g., 'gmail', 'outlook'
+    service: "gmail", // e.g., 'gmail', 'outlook'
     auth: {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    secure: true,
+    port: 465,
   });
 
   // Email options

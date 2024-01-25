@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
       // Send email
       const resetLink = `${process.env.APP_URL}/reset-password?token=${token}`;
-      sendEmail(email, 'reset password', resetLink);
+      await sendEmail(email, 'reset password', resetLink);
     }
 
     return NextResponse.json(`Reset link sent to ${email}`, { status: 200 });

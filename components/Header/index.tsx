@@ -27,7 +27,7 @@ function Header({ title, isHidden, logoutVisible }: Props) {
             {title}
           </p>
           {logoutVisible && (
-            <Link href="/create">
+            <Link href="/movies/create">
               <Image src={AddIcon} alt="AddIcon" />
             </Link>
           )}

@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     // Send email
     const link = `${process.env.APP_URL}?token=${token}`;
-    sendEmail(email, 'Email confirmation', link);
+    await sendEmail(email, 'Email confirmation', link);
 
     return NextResponse.json(`Confirmation link is sent to ${email}. Please check your email!`, {
       status: 200,
