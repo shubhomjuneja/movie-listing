@@ -9,11 +9,18 @@ import Layout from "../Layout/index";
 import Header from "../Header/index";
 import Input from "../Input/index";
 import Button from "../Button/index";
-import { convertToBase64 } from "@/utils";
+import {convertToBase64, isHttpOrHttpsUrl} from "@/utils";
 import UploadImageIcon from "../../assets/upload.svg";
 import { handleCreateMovie } from "@/app/lib/actions";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { titleValidation, publishingYearValidation } from "./validation";
+// import { v2 as cloudinary } from 'cloudinary';
+
+// cloudinary.config({
+//   cloud_name: "dtoyuugm1",
+//   api_key: "787529842874491",
+//   api_secret: "nCTABbb-woJ0Lzqe_vfQ7NzJq_Y",
+// });
 
 type Props = {
   isUpdate?: boolean;
@@ -52,12 +59,31 @@ function MovieForm({ isUpdate, defaultValues = initialValues }: Props) {
     register,
     formState: { errors },
     control,
+    handleSubmit
   } = useForm<FieldValues>({
     defaultValues,
   });
 
-  const formSubmitAction = async (x: any) => {
-    await handleCreateMovie(x, selectedImage, defaultValues?.id);
+  const onMyFormSubmit = async (data: any) => {
+    let bannerImage = selectedImage;
+    if (selectedImage && !isHttpOrHttpsUrl(selectedImage)) {
+      const CLOUDINARY_URL =
+          "https://api.cloudinary.com/v1_1/dtoyuugm1/image/upload";
+      const CLOUDINARY_UPLOAD_PRESET = "zibnccul";
+      const formData = new FormData();
+      formData.append("file", data.bannerImage);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      bannerImage = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: formData,
+      })
+          .then((response) => response.json())
+          .then((data) => {
+            return data?.url;
+          })
+          .catch((err) => console.error(err));
+    }
+    await handleCreateMovie({...data, bannerImage}, defaultValues?.id);
     router.back();
   };
 
@@ -70,10 +96,10 @@ function MovieForm({ isUpdate, defaultValues = initialValues }: Props) {
           logoutVisible={false}
         />
         <form
-          action={(formData) =>
-            startTransaction(() => formSubmitAction(formData))
-          }
-          // onSubmit={handleSubmit((data) => onMyFormSubmit(data))}
+          // action={(formData) =>
+          //   startTransaction(() => formSubmitAction(formData))
+          // }
+          onSubmit={handleSubmit((data) => startTransaction(() => onMyFormSubmit(data)))}
         >
           <div className="flex mt-[120px] mobileMax:flex-col mobileMax:mt-[80px]">
             <div

@@ -3,34 +3,17 @@
 import prisma from "./prismaDb";
 import { revalidatePath } from "next/cache";
 import { isHttpOrHttpsUrl } from "@/utils";
+import {redirect} from "next/navigation";
+
+
 
 export async function handleCreateMovie(
-  form: FormData,
-  selectedImage: string | null,
+  form: any,
   id?: string
 ) {
-  let bannerImage = selectedImage;
-  const file = form.get("bannerImage");
-  if (!isHttpOrHttpsUrl(selectedImage) && file) {
-    const CLOUDINARY_URL =
-      "https://api.cloudinary.com/v1_1/dtoyuugm1/image/upload";
-    const CLOUDINARY_UPLOAD_PRESET = "zibnccul";
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    bannerImage = await fetch(CLOUDINARY_URL, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return data?.url;
-      })
-      .catch((err) => console.error(err));
-  }
-
-  const title = form.get("title") as string;
-  const publishingYear = form.get("publishingYear") as string;
+  const bannerImage = form.bannerImage;
+  const title = form.title;
+  const publishingYear = form.publishingYear;
   if (title && publishingYear && bannerImage) {
     const data = {
       title,
@@ -47,7 +30,8 @@ export async function handleCreateMovie(
   }
 
   revalidatePath("/");
-  return { success: true };
+  redirect("/movies");
+  // return { success: true };
 }
 
 export async function getMovies() {
